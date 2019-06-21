@@ -78,6 +78,6 @@ to operate correctly.
 
 # AUTHORS
 
-Bryan Steele &lt;[brynet@gmail.com](mailto:brynet@gmail.com)&gt;
+Bryan Steele &lt;[brynet AT gmail.com](mailto:)&gt;
 
 OpenBSD 6.5 - June 21, 2019
