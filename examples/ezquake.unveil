@@ -1,0 +1,2 @@
+# ezquake looks for config/save data in cwd (don't run from $HOME)
+. rwc

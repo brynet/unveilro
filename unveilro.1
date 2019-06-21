@@ -1,0 +1,75 @@
+.Dd $Mdocdate$
+.Dt UNVEILRO 1
+.Os
+.Sh NAME
+.Nm unveilro
+.Nd
+.Xr unveil 2
+a read-only view of the filesystem hierarchy
+.Sh SYNOPSIS
+.Nm unveilro
+.Bk -words
+.Ar cmd ...
+.Ek
+.Sh DESCRIPTION
+.Nm
+executes commands with an initial read-only
+.Xr unveil 2
+set.
+To allow a lager number of applications to run without any
+additional config, write and create operations are permitted in
+.Pa /dev
+and
+.Pa /tmp .
+.Pp
+As such, it is
+.Em NOT
+supported to use
+.Nm
+as root, or recommended with programs that already apply
+.Xr unveil 2
+or
+.Xr pledge 2
+themselves.
+.Pp
+The
+.Nm
+program should only be used as a last resort, if possible, greater
+protection and safety can be better attained through careful
+observation and direct source modification of programs.
+.Sh EXAMPLES
+.Nm
+will optionally check for additional paths to unveil in
+.Bd -literal -offset indent
+~/.config/unveilro/<cmd>.unveil
+.Ed
+.Pp
+For example:
+.Bd -literal -offset indent
+# Example comment
+# path  permissions (any combination of rwcx, or noperm)
+~/games r
+~/.savedir rwc
+
+# apply quirks
+quirks mkdir_home
+.Ed
+.Sh SEE ALSO
+.Xr unveil 2 ,
+.Xr ld.so 1
+.Sh CAVEATS
+.Nm
+does not support setuid programs.
+.Nm
+utilizes several implementation-specific details on
+.Ox .
+For example, LD_PRELOAD and PIE (Position Independent Executables).
+.Nm
+must be installed in
+.Pa $HOME/bin
+as
+.Nm
+to operate correctly.
+.Sh AUTHORS
+.An -nosplit
+.An Bryan Steele Aq Mt brynet@gmail.com

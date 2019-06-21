@@ -1,0 +1,12 @@
+# directory/file  permissions
+/dev/null r
+
+# '~' is expanded to user homedir
+~/.config r
+
+# permissions match unveil(2)
+# noperm for undocumented "" permission argument, for narrowing perms
+/etc noperm
+
+# apply quirks (currently only one)
+quirks mkdir_home

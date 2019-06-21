@@ -1,0 +1,4 @@
+~/.q3a rwc
+
+# This currently depends on some mkdir(2) hacks in unveilro
+quirks mkdir_home
