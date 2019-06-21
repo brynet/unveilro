@@ -17,7 +17,7 @@ a read-only view of the filesystem hierarchy
 executes commands with an initial read-only
 unveil(2)
 set.
-To allow a lager number of applications to run without any
+To allow a larger number of applications to run without any
 additional config, write operations are permitted in
 */dev*,
 and create in
