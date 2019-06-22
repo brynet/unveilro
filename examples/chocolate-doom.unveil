@@ -1,3 +1,19 @@
+# undo global read-only
+/ noperm
+
+# data and libraries
+/usr r
+
+# X applications need this
+~/.Xauthority r
+
+# user WAD dir (careful with symlinks)
+~/.local/share/doom r
+
+# custom WAD dir
+#~/Games r
+
+# config dir
 ~/.local/share/chocolate-doom rwc
 
 # This currently depends on some mkdir(2) hacks in unveilro

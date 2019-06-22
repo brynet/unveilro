@@ -5,8 +5,12 @@
 ~/.config r
 
 # permissions match unveil(2)
-# noperm for undocumented "" permission argument, for narrowing perms
-/etc noperm
+
+# noperm for undocumented "" no permission argument, for narrowing perms
+# This is tricky to use correctly due to the covering read-only / unveil
+# undo global read-only
+/ noperm
+# .. open things up
 
 # apply quirks (currently only one)
 quirks mkdir_home
