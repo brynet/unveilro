@@ -32,6 +32,7 @@ int	(*orig_atexit)(void (*)(void));
 int	(*orig_mkdir)(const char *, mode_t);
 void	parseunveil(const char *);
 
+int	has_setup = 0;
 int	quirks_mkdir_home = 0;
 
 int
@@ -92,8 +93,6 @@ main(int argc, char **argv)
 fatal:
 	return 1;
 }
-
-int has_setup = 0;
 
 #if notyet
 struct safe_devs {
