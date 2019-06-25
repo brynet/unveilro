@@ -116,7 +116,7 @@ struct safe_devs {
 	{ "/dev/zero", "rw"},
 	{ "/dev/null", "rw"},
 	{"/dev/urandom", "r"},
-	{NULL, 0}
+	{NULL, NULL}
 };
 #endif
 

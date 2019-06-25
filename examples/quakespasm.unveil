@@ -1,5 +1,1 @@
-# quakespasm looks for config/save data in cwd (don't run from $HOME)
-. rwc
-
-# relative path
-#id1/config.cfg rwc
+~/.quakespasm rwc
