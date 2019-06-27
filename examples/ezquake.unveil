@@ -1,2 +1,6 @@
 # ezquake looks for config/save data in cwd (don't run from $HOME)
 . rwc
+
+# ezquake is stupid, looks for pak files here, but tries to open them
+# O_DIRECTORY!
+#~/.ezquake rwc

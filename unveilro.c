@@ -163,12 +163,13 @@ atexit(void (*function)(void))
 	ret = orig_atexit(function);
 	/* We cannot avoid clobbering errno, so save it */
 	save_errno = errno;
-	if (has_setup)
+	if (ret < 0 || has_setup)
 		goto atexit_native;
 	progname = getprogname();
 	isunveilro = (strcmp(progname, "unveilro") == 0);
 	/* Default read-only hierarchy, exec only if unveilro itself */
-	(void) unveil("/", isunveilro ? "rx" : "r");
+	if (unveil("/", isunveilro ? "rx" : "r") == -1)
+		_exit(1);
 	if (isunveilro == 0) {
 		/* Some exceptions required by typical programs */
 #if notyet
@@ -179,12 +180,15 @@ atexit(void (*function)(void))
 		}
 #endif
 		/* This is safe, file perms prevent bad stuff .. */
-		(void) unveil("/dev", "rw"); /* fd, ptm, null, tty, ..  */
-		(void) unveil("/tmp", "rwc");
+		if (unveil("/dev", "rw") == -1) /* fd, ptm, null, tty */
+			_exit(1);
+		if (unveil("/tmp", "rwc") == -1)
+			_exit(1);
 
 #if 0
 		/* XXX: getcwd unveil(2) bug again? mono games */
-		(void) unveil(".", "r");
+		if (unveil(".", "r") == -1)
+			_exit(1);
 #endif
 
 		/* Any custom unveil overrides */
