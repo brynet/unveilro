@@ -1,0 +1,9 @@
+~/.local/share/diasurgical rwc
+
+# XXX This issue is known upstream (#45), needs write access to diabdat.mpq
+# If gamedata is in cwd.
+diabdat.mpq rw
+patch_rt.mpq rw
+
+# This currently depends on some mkdir(2) hacks in unveilro
+quirks mkdir_home

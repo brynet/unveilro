@@ -163,7 +163,7 @@ atexit(void (*function)(void))
 	ret = orig_atexit(function);
 	/* We cannot avoid clobbering errno, so save it */
 	save_errno = errno;
-	if (ret < 0 || has_setup)
+	if (ret != 0 || has_setup)
 		goto atexit_native;
 	progname = getprogname();
 	isunveilro = (strcmp(progname, "unveilro") == 0);
