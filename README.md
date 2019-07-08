@@ -33,6 +33,17 @@ or
 pledge(2)
 themselves.
 
+By default, execute permissions are
+*NOT*
+permitted unless overridden by the per-program unveil config.
+Note that because of
+unveil(2)
+semantics, execute permissions are not necessary to simply enter or
+traverse a directory. Effectively this only removes the ability to
+exec(3)
+arbitrary files, similar to dropping the "exec" promise from
+pledge(2).
+
 The
 **unveilro**
 program should only be used as a last resort, if possible, greater
@@ -69,6 +80,7 @@ does not support setuid programs.
 utilizes several implementation-specific details on
 OpenBSD.
 For example, LD\_PRELOAD and PIE (Position Independent Executables).
+Static binaries are NOT supported for those reasons.
 **unveilro**
 must be installed in
 *$HOME/bin*
