@@ -31,8 +31,8 @@
 int	(*orig_atexit)(void (*)(void));
 int	(*orig_mkdir)(const char *, mode_t);
 
-int	has_setup = 0;
-int	quirks_mkdir_home = 0;
+static int	has_setup = 0;
+static int	quirks_mkdir_home = 0;
 
 int
 main(int argc, char **argv)
