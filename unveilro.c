@@ -30,7 +30,6 @@
 
 int	(*orig_atexit)(void (*)(void));
 int	(*orig_mkdir)(const char *, mode_t);
-void	parseunveil(const char *);
 
 int	has_setup = 0;
 int	quirks_mkdir_home = 0;
@@ -151,62 +150,9 @@ mkdir(const char *path, mode_t mode)
 	return (ret);
 }
 
-int
-atexit(void (*function)(void))
-{
-	int ret, save_errno, isunveilro;
-	const char *progname;
-
-	orig_atexit = dlsym(RTLD_NEXT, "atexit");
-	if (orig_atexit == NULL)
-		_exit(1);
-	ret = orig_atexit(function);
-	/* We cannot avoid clobbering errno, so save it */
-	save_errno = errno;
-	if (ret != 0 || has_setup)
-		goto atexit_native;
-	progname = getprogname();
-	isunveilro = (strcmp(progname, "unveilro") == 0);
-	/* Default read-only hierarchy, exec only if unveilro itself */
-	if (unveil("/", isunveilro ? "rx" : "r") == -1)
-		_exit(1);
-	if (isunveilro == 0) {
-		/* Some exceptions required by typical programs */
-#if notyet
-		/* XXX: This might be needed some day, but not yet.. */
-		struct safe_devs *p;
-		for (p = allowed_devices; p->dev != NULL; p++) {
-			/* unveil(p->dev, p->permissions) */
-		}
-#endif
-		/* This is safe, file perms prevent bad stuff .. */
-		if (unveil("/dev", "rw") == -1) /* fd, ptm, null, tty */
-			_exit(1);
-		if (unveil("/tmp", "rwc") == -1)
-			_exit(1);
-
-#if 0
-		/* XXX: getcwd unveil(2) bug again? mono games */
-		if (unveil(".", "r") == -1)
-			_exit(1);
-#endif
-
-		/* Any custom unveil overrides */
-		parseunveil(progname);
-	}
-	/* Lock unveil */
-	if (unveil(NULL, NULL) == -1)
-		_exit(1);
-	has_setup = 1;
-
-atexit_native:
-	errno = save_errno;
-	return ret;
-}
-
 /* unveil config file parsing from Robert Nagy's chromium patches. */
 #define	MAXTOKENS	3
-void
+static inline void
 parseunveil(const char *progname)
 {
 	size_t len = 0, lineno = 0;
@@ -293,4 +239,57 @@ parseunveil(const char *progname)
 		/* not fatal */
 	}
 #endif
+}
+
+int
+atexit(void (*function)(void))
+{
+	int ret, save_errno, isunveilro;
+	const char *progname;
+
+	orig_atexit = dlsym(RTLD_NEXT, "atexit");
+	if (orig_atexit == NULL)
+		_exit(1);
+	ret = orig_atexit(function);
+	/* We cannot avoid clobbering errno, so save it */
+	save_errno = errno;
+	if (ret != 0 || has_setup)
+		goto atexit_native;
+	progname = getprogname();
+	isunveilro = (strcmp(progname, "unveilro") == 0);
+	/* Default read-only hierarchy, exec only if unveilro itself */
+	if (unveil("/", isunveilro ? "rx" : "r") == -1)
+		_exit(1);
+	if (isunveilro == 0) {
+		/* Some exceptions required by typical programs */
+#if notyet
+		/* XXX: This might be needed some day, but not yet.. */
+		struct safe_devs *p;
+		for (p = allowed_devices; p->dev != NULL; p++) {
+			/* unveil(p->dev, p->permissions) */
+		}
+#endif
+		/* This is safe, file perms prevent bad stuff .. */
+		if (unveil("/dev", "rw") == -1) /* fd, ptm, null, tty */
+			_exit(1);
+		if (unveil("/tmp", "rwc") == -1)
+			_exit(1);
+
+#if 0
+		/* XXX: getcwd unveil(2) bug again? mono games */
+		if (unveil(".", "r") == -1)
+			_exit(1);
+#endif
+
+		/* Any custom unveil overrides */
+		parseunveil(progname);
+	}
+	/* Lock unveil */
+	if (unveil(NULL, NULL) == -1)
+		_exit(1);
+	has_setup = 1;
+
+atexit_native:
+	errno = save_errno;
+	return ret;
 }
