@@ -195,7 +195,8 @@ atexit(void (*function)(void))
 		parseunveil(progname);
 	}
 	/* Lock unveil */
-	(void) unveil(NULL, NULL);
+	if (unveil(NULL, NULL) == -1)
+		_exit(1);
 	has_setup = 1;
 
 atexit_native:
