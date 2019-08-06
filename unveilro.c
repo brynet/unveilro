@@ -210,10 +210,10 @@ parseunveil(const char *progname)
 			int quirks = 0;
 			if (strcmp("quirks", path) == 0) {
 				if (strcmp("mkdir_home", tokens[1]) == 0) {
+					quirks_mkdir_home = 1;
 #ifdef DEBUG
 					fprintf(stderr,
 					    "mkdir_home quirk found\n");
-					quirks_mkdir_home = 1;
 #endif
 				}
 				if (quirks_mkdir_home)
