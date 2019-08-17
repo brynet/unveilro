@@ -252,8 +252,11 @@ atexit(void (*function)(void))
 		_exit(1);
 	ret = orig_atexit(function);
 	/* We cannot avoid clobbering errno, so save it */
-	save_errno = errno;
-	if (ret != 0 || has_setup)
+	if (ret != 0) {
+		save_errno = errno;
+		goto atexit_native;
+	}
+	if (has_setup)
 		goto atexit_native;
 	progname = getprogname();
 	isunveilro = (strcmp(progname, "unveilro") == 0);
@@ -290,6 +293,7 @@ atexit(void (*function)(void))
 	has_setup = 1;
 
 atexit_native:
-	errno = save_errno;
+	if (ret != 0)
+		errno = save_errno;
 	return ret;
 }
