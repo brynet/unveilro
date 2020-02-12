@@ -199,14 +199,21 @@ parseunveil(const char *progname)
 				}
 				memmove(tokens[0], tokens[0] + 1,
 				    strlen(tokens[0]));
-				strncpy(path, home, sizeof(path) - 1);
-				path[sizeof(path) - 1] = '\0';
-				strncat(path, tokens[0],
-				    sizeof(path) - 1 - strlen(path));
+				if (strlcpy(path, home, sizeof(path)) >=
+				    sizeof(path) ||
+				    strlcat(path, tokens[0], sizeof(path)) >=
+				    sizeof(path)) {
+					fclose(fp);
+					return;
+				}
 			} else {
-				strncpy(path, tokens[0], sizeof(path) - 1);
-				path[sizeof(path) - 1] = '\0';
+				if (strlcpy(path, tokens[0], sizeof(path)) >=
+				    sizeof(path)) {
+					fclose(fp);
+					return;
+				}
 			}
+
 			int quirks = 0;
 			if (strcmp("quirks", path) == 0) {
 				if (strcmp("mkdir_home", tokens[1]) == 0) {
