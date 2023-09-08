@@ -4,6 +4,9 @@
 # '~' is expanded to user homedir
 ~/.config r
 
+# Mesa shader cache
+~/.cache/mesa_shader_cache rwc
+
 # permissions match unveil(2)
 
 # noperm for undocumented "" no permission argument, for narrowing perms

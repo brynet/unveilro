@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Bryan Steele <brynet@gmail.com>
+ * Copyright (c) 2019-2023 Bryan Steele <brynet@gmail.com>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -31,7 +31,7 @@
 int	(*orig_atexit)(void (*)(void));
 int	(*orig_mkdir)(const char *, mode_t);
 
-static int	has_setup = 0;
+static int	has_unveiled = 0;
 static int	quirks_mkdir_home = 0;
 
 int
@@ -78,6 +78,8 @@ main(int argc, char **argv)
 		    preload_path, errno);
 		goto fatal;
 	}
+	if (pledge("stdio exec", NULL) == -1)
+		goto fatal;
 
 	/*
 	 * What's happening here is that we're preloading ourself into
@@ -94,7 +96,7 @@ fatal:
 }
 
 #if notyet
-struct safe_devs {
+const struct safe_devs {
 	const char *const dev;
 	const char *const permissions;
 } allowed_devices[] = {
@@ -140,7 +142,7 @@ mkdir(const char *path, mode_t mode)
 #endif
 		size_t len = strlen(_PATH_HOME);
 		if (path && (strlen(path) >= len) &&
-		    (strncmp(_PATH_HOME, path, len) == 0)) {
+		    (strncmp(path, _PATH_HOME, len) == 0)) {
 			errno = EEXIST;
 			return -1;
 		}
@@ -248,23 +250,12 @@ parseunveil(const char *progname)
 #endif
 }
 
-int
-atexit(void (*function)(void))
+static inline void
+dounveil(void)
 {
-	int ret, save_errno, isunveilro;
+	int isunveilro;
 	const char *progname;
 
-	orig_atexit = dlsym(RTLD_NEXT, "atexit");
-	if (orig_atexit == NULL)
-		_exit(1);
-	ret = orig_atexit(function);
-	/* We cannot avoid clobbering errno, so save it */
-	if (ret != 0) {
-		save_errno = errno;
-		goto atexit_native;
-	}
-	if (has_setup)
-		goto atexit_native;
 	progname = getprogname();
 	isunveilro = (strcmp(progname, "unveilro") == 0);
 	/* Default read-only hierarchy, exec only if unveilro itself */
@@ -297,10 +288,26 @@ atexit(void (*function)(void))
 	/* Lock unveil */
 	if (unveil(NULL, NULL) == -1)
 		_exit(1);
-	has_setup = 1;
+	has_unveiled = 1;
+}
 
-atexit_native:
+/*
+ * atexit(3) was chosen pretty much at random, as it's typically
+ * one of the earliest functions to be called in most dynamically
+ * linked programs.
+ */
+int
+atexit(void (*function)(void))
+{
+	int ret;
+
+	orig_atexit = dlsym(RTLD_NEXT, "atexit");
+	if (orig_atexit == NULL)
+		_exit(1);
+	ret = orig_atexit(function);
 	if (ret != 0)
-		errno = save_errno;
+		return ret;
+	if (has_unveiled == 0)
+		dounveil();
 	return ret;
 }

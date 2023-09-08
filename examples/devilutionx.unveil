@@ -1,5 +1,8 @@
 ~/.local/share/diasurgical rwc
 
+# Mesa shader cache
+~/.cache/mesa_shader_cache rwc
+
 # If gamedata is in cwd.
 diabdat.mpq r
 patch_rt.mpq r

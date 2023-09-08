@@ -1,3 +1,6 @@
+# Mesa shader cache
+~/.cache/mesa_shader_cache rwc
+
 ~/.xonotic rwc
 ~/.xonotic/data rwc
 ~/.xonotic/data/data rwc

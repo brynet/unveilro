@@ -1,1 +1,4 @@
+# Mesa shader cache
+~/.cache/mesa_shader_cache rwc
+
 ~/.quakespasm rwc

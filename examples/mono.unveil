@@ -1,3 +1,6 @@
+# Mesa shader cache
+~/.cache/mesa_shader_cache rwc
+
 ~/.mono rwc
 
 # Stardew Valley
